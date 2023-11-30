@@ -1,6 +1,12 @@
-import React from 'react'
+import {React,useContext} from 'react'
+import UserContext from '../context/UserContext'
 
 const Login = () => {
+
+  const {setRole} = useContext(UserContext)
+  const {setUsername} = useContext(UserContext)
+  const {setId} = useContext(UserContext)
+
   return (
     <div>
 
