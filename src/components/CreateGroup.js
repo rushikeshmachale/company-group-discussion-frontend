@@ -1,5 +1,5 @@
 import React from 'react'
-import MyGroupService from './MyGroupService';
+
 
 const CreateGroup = () => {
     return (
