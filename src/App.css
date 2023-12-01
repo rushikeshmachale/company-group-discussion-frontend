@@ -36,6 +36,35 @@
     transform: rotate(360deg);
   }
 }
+
+/* ==========added============ */
+
+.top-div {
+  height: 100px;
+  background-color: #e2dada;
+}
+
+.chat-window {
+  height: calc(100vh - 100px);
+}
+
+.sidebar {
+  background-color: #f2f2f2;
+}
+
+.chat-messages {
+  height: calc(100% - 60px);
+  overflow-y: scroll;
+}
+
+
+/* =======sidebar table========== */
+.sidebartable{
+  height: calc(100% - 100px);
+}
+
+/* ==================Rufi======================== */
+
 body {
   font-family: Arial, sans-serif;
   margin: 20px;
@@ -70,3 +99,7 @@ button {
 button:hover {
   background-color: skyblue;
 }
+
+
+
+/* ============================ */
