@@ -2,6 +2,7 @@ import {useNavigate} from 'react-router-dom'
 import React, { useState } from "react";
 import MyGroupService from "../services/MyGroupService";
 
+
 const CreateGroup = () => {
 
     const navigate=useNavigate()
