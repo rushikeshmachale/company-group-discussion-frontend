@@ -1,55 +1,105 @@
-import {React,useContext} from 'react'
-import UserContext from '../context/UserContext'
+import React, {  useState } from 'react'
+import EmployeeService from '../services/LoginService';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
+
+
+
 
 const Login = () => {
+    const [username,setUsername] = useState('');
+    const [password,setPassword] =useState('');
+    const[employee,setEmployee]=useState('');
+    const[error,setError] =useState('');
+    const[role,setRole] = useState(''); 
 
-  const {setRole} = useContext(UserContext)
-  const {setUsername} = useContext(UserContext)
-  const {setId} = useContext(UserContext)
+
+    const navigate = useNavigate();
+
+    const handleUsernameChange = (event) => {
+        setUsername(event.target.value);
+    };
+
+    const handlePasswordChange = (event) => {
+        setPassword(event.target.value);
+    };
+
+    const handleLogin = async(event)=>{
+        event.preventDefault();
+
+        try{
+            const employee = await EmployeeService.login(username,password);
+            if (employee) {
+             setEmployee(employee);
+              setRole(employee.role)
+              setError('');
+              handleNavigate(employee.role); 
+              Cookies.set('employee',JSON.stringify(employee));
+
+            } else {
+              setError('Role not fetched correctly');
+              setRole(null);
+            }
+            
+        }catch(error){
+            setError(error);
+            setRole(null);
+        }
+    }
+
+    console.log(role);
+
+   const handleNavigate=(role)=>{
+   if(role==='admin'){
+    navigate('admin/dashboard')
+   }else{
+    navigate('user/dashboard')
+   }
+
+    
+   }
 
   return (
-    <div>
 
 
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="text-center">Login</h3>
+    <div className="container">
+      <div className="row justify-content-center h-100">
+        <div className="col-md-6">
+           <div>
+              <h2>Login</h2>
+              {error && <div className="alert alert-danger">{error.toString()}</div>}
+            <form onSubmit={handleLogin}>
+                <div className="mb-3">
+                  <label className="form-label">Username:</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="username"
+                    value={username}
+                    onChange={handleUsernameChange}
+                  />
                 </div>
-                <div class="card-body">
-                    <form onsubmit="return handleLogin()">
-                        <div class="form-group">
-                            <label for="username">Username:</label>
-                            <input type="text" class="form-control" id="username" placeholder="Enter your username" required></input>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password:</label>
-                            <input type="password" class="form-control" id="password" placeholder="Enter your password" required></input>
-                        </div>
-                        <div class="form-group">
-                            <label for="category">Category:</label>
-                            <select class="form-control" id="category">
-                                
-                                <option value="admin">Admin</option>
-                                <option value="user">Manager</option>
-                                <option value="user">Employee</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block">Login</button>
-                    </form>
+                <div className="mb-3">
+                  <label className="form-label">Password:</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    name="password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                  />
                 </div>
+                <button type="submit" className="btn btn-primary">
+                  Login
+                </button>
+                
+              </form>
             </div>
+          
         </div>
-    </div>
-</div>
-
-
-
-
-
+      </div>
+      
     </div>
   )
 }

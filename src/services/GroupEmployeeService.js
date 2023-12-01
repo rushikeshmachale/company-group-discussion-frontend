@@ -64,7 +64,7 @@ const GroupEmployeeService = {
     getGroupsByEmployeeId:async(employee_id)=>{
         try{
 
-            const response = await axios.post(`${API_BASE_URL}/getgroups/${employee_id}`);
+            const response = await axios.get(`${API_BASE_URL}/getgroups/${employee_id}`);
             return response.data
 
         }catch (error){

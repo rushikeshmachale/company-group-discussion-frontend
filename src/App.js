@@ -7,19 +7,17 @@ import { BrowserRouter,Route,Routes } from 'react-router-dom';
 import UpdateGroup from './components/UpdateGroup';
 import UserDashBoard from './components/UserDashBoard';
 import Info from './components/Info';
-import UserContextProvider from './context/UserContextProvider';
 
 
 function App() {
   
   
   return (
-    <UserContextProvider>
     <BrowserRouter>
-    
+   
     <Routes>
-    
-    <Route  path='/' element={<Login  />}/>
+      
+        <Route  path='/' element={<Login  />}/>
         <Route  path='admin/dashboard' element={<DashBoard  />}/>
         <Route  path='user/dashboard' element={<UserDashBoard  />}/>
         <Route  path='admin/dashboard/create' element={<CreateGroup />}/>
@@ -29,10 +27,9 @@ function App() {
         
 
       
-        </Routes>
+    </Routes>
    
     </BrowserRouter>
-    </UserContextProvider>
    
   );
 }
