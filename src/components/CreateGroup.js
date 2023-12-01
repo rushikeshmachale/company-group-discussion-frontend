@@ -41,7 +41,7 @@ const CreateGroup = () => {
 
         
             <div class="form-group">
-              <label for="type">Type:</label>
+              <label for="type">Group Type:</label>
               <select name="type" id="type" className="form-control" value={type}
               onChange={handleChange}>
               <option value="Technical">Technical</option>
