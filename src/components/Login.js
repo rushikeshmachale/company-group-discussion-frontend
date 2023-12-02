@@ -37,7 +37,7 @@ const Login = () => {
               Cookies.set('employee',JSON.stringify(employee));
 
             } else {
-              setError('Role not fetched correctly');
+              setError('invalid credentials!!');
               setRole(null);
             }
             
