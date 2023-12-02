@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import {  useNavigate } from "react-router-dom";
-import GroupEmployeeService from "../services/GroupEmployeeService";
+// import GroupEmployeeService from "../services/GroupEmployeeService";
 import MessageService from "../services/MessageService";
-
+import ClearIcon from '@mui/icons-material/Clear';
+import MyGroupService from "../services/MyGroupService";
 
 
 
 const DashBoard = () => {
 
     const[employee,setEmployee] = useState('');
-    const[groups,setGroups] = useState([]);
+    // const[groups,setGroups] = useState([]);
     const[messages,setMessages] = useState([]);
-    const [selectedGroup, setSelectedGroup] = useState(null); 
-    const navigate = useNavigate()
+    const [selectedGroup, setSelectedGroup] = useState(null);
+    const [messageInput, setMessageInput] = useState('');
+    const[groupName,setGroupName]=useState('');
+    const [allGroups, setAllGroups] = useState([]);
+    const navigate = useNavigate();
   
     useEffect(() => {
     
@@ -26,20 +30,33 @@ const DashBoard = () => {
           }
         };
     
-        const fetchGroups = async (id) => {
+        // const fetchGroups = async (id) => {
+        //   try {
+        //     const response = await GroupEmployeeService.getGroupsByEmployeeId(id);
+        //     setGroups(response);
+        //     Cookies.set('groups', response);
+        //   } catch (error) {
+        //     console.error('Error fetching groups:', error);
+        //   }
+        // };
+
+
+        const fetchAllGroups = async () => {
           try {
-            const response = await GroupEmployeeService.getGroupsByEmployeeId(id);
-            setGroups(response);
-            Cookies.set('groups', response);
+            const fetchedAllGroups = await MyGroupService.getAllGroups();
+            setAllGroups(fetchedAllGroups); // Update all groups state
           } catch (error) {
-            console.error('Error fetching groups:', error);
+            console.error('Error fetching all groups:', error);
           }
         };
+
+
     
         getEmployee();
-        if (employee.id) {
-          fetchGroups(employee.id);
-        }
+        // if (employee.id) {
+        //   fetchGroups(employee.id);
+        // }
+        fetchAllGroups();
       }, [employee.id]);
 
 
@@ -47,20 +64,22 @@ const DashBoard = () => {
   const fetchMessages = async (id) => {
     try {
       const response = await MessageService.getMessagesByGroupId(id);
-      setMessages(response); // Assuming response is an object with a 'data' property containing messages
+      setMessages(response); 
     } catch (error) {
       console.error('Error fetching messages:', error);
     }
   };
 
-  const handleGroupClick = (groupId) => {
-    fetchMessages(groupId);
+  const handleGroupClick = (group) => {
+    setSelectedGroup(group);
+    fetchMessages(group.id);
+    setGroupName(group.name);
+    
   };
 
   const handleInfoClick =async (group) => {
     setSelectedGroup(group);
     Cookies.set('group',JSON.stringify(group));
-    console.log(group);
     navigate('info')
   };
 
@@ -76,6 +95,44 @@ const DashBoard = () => {
     navigate('/')
   }
 
+  const handleSend=async()=>{
+
+    try {
+      console.log("slected group",selectedGroup);
+      const messageData = {
+        text:messageInput,
+        group:selectedGroup,
+        employee:employee
+      };
+
+      const response = await MessageService.createMessage(messageData);
+      console.log(response);
+      setMessages([...messages,response]);
+      setMessageInput('')
+
+      
+    } catch (error) {
+
+      console.error("Error Sending Message");
+      
+    }
+
+
+  }
+
+  const handleDeleteMessage = async (id) => {
+    try {
+      const response = await MessageService.deleteMessage(id);
+      if (response) {
+        // Filter out the deleted message from the messages state
+        const updatedMessages = messages.filter((message) => message.id !== id);
+        setMessages(updatedMessages);
+      }
+    } catch (error) {
+      console.error("Error while deleting message", error);
+    }
+  };
+
 
   return (
   <div>
@@ -87,9 +144,10 @@ const DashBoard = () => {
                 <span>Hello  {employee.username}!</span>
             </div>
             <div className="w-75 text-left d-flex align-items-center justify-content-between">
-                <span>Group Name!!</span>
+                <span>{groupName}</span>
             <div>
                 
+            <button className="btn btn-info" onClick={()=>handleInfoClick(selectedGroup)}>Info</button>
                <button className="btn btn-success m-2" onClick={handleUpdate} >Update</button>
                <button className="btn btn-danger " onClick={handleLogout} >Logout</button>
                          
@@ -104,27 +162,23 @@ const DashBoard = () => {
   <div className="px-3 py-4 d-flex flex-column justify-content-between sidebartable">
     <div>
       <input type="text" className="form-control mb-3" placeholder="Search..." />
-      <table className="table">
+      <table className="table table-hover">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Type</th>
+            <th>Sr.No</th>
             <th>Name</th>
-            <th>Action</th>
+            <th>Type</th>
+        
           </tr>
         </thead>
         <tbody>
-          {groups.map((group) => (
-            <tr key={group.id}>
+          {allGroups.map((group) => (
+            <tr key={group.id} onClick={() => handleGroupClick(group)}
+            className={selectedGroup && selectedGroup.id === group.id ? 'table-success' : ''}>
               <td>{group.id}</td>
+              <td >{group.name}</td>
               <td>{group.type}</td>
-              <td>{group.name}</td>
-              <td>
-                <button className="btn btn-primary" onClick={() => handleGroupClick(group.id)}>Go</button>
-              </td>
-              <td>
-              <button className="btn btn-info" onClick={()=>handleInfoClick(group)}>Info</button>              </td>
-             
+              
             </tr>
           ))}
         </tbody>
@@ -137,28 +191,43 @@ const DashBoard = () => {
             </div>
 
             <div className="col-md-9 chat-window">
-  <div className="chat-messages border-bottom mb-3">
+  <div className="chat-messages">
     {messages ? (
       messages.map((message, index) => (
-        <div key={index} className={`message ${message.sender === employee.id ? 'sent' : 'received'}`}>
-          <div className={`message-content p-2 mb-2 rounded ${message.sender === employee.id ? 'bg-primary text-white' : 'bg-light'}`}>
-            {message.text}
-          </div>
-          <div className={`message-timestamp text-muted small text-end ${message.sender === employee.id ? 'text-white' : ''}`}>
-            {new Date(message.localDateTime).toLocaleString()}
+        <div key={index} className={`message ${message.employee.id === employee.id ? 'sent' : 'received'}`}>
+          <div className={`message-content ${message.employee.id === employee.id ? 'sent-message' : 'received-message'} p-3 rounded mb-2`}>
+            <div className="message-info d-flex justify-content-between align-items-center mb-1">
+              <span className="message-sender fw-bold">{message.employee.id === employee.id ? 'You' : message.employee.username}</span>
+              <span className="message-timestamp text-muted">{new Date(message.localDateTime).toLocaleString()}</span>
+              
+                <ClearIcon onClick={()=>handleDeleteMessage(message.id)}></ClearIcon>
+              
+            </div>
+            <div className="message-text">
+              {message.text}
+            </div>
           </div>
         </div>
       ))
     ) : (
-      <div>No messages available</div>
+      <div className="alert alert-info">No messages available</div>
     )}
   </div>
 
 
 
+
                 <div className="d-flex">
-                    <input type="text" className="form-control m-1" placeholder="Type a message..."/>
-                    <button className="btn btn-primary m-1 ">Send</button>
+                     <input
+            type="text"
+            className="form-control m-1"
+            placeholder="Type a message..."
+            value={messageInput}
+            onChange={(e) => setMessageInput(e.target.value)}
+          />
+          <button className="btn btn-primary m-1" onClick={handleSend}>
+            Send
+          </button>
                 </div>
             </div>
 
