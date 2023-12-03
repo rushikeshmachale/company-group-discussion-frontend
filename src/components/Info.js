@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Info = () => {
   const [group, setGroup] = useState(null);
@@ -60,6 +60,12 @@ const Info = () => {
     
   }
 
+  const navigateToAdd=()=>{
+
+    if(employee.role==='admin'){
+      navigate(`/admin/dashboard/add/${group.id}`)
+  }
+  }
   return (
     <div className="container mt-4">
       <h3 className="mb-4">Group Information</h3>
@@ -134,6 +140,9 @@ const Info = () => {
         </div>
       )}
       <button className='btn btn-primary mt-4' onClick={handleBack}>Back</button>
+      {employee.role==='admin' &&
+      <button onClick={navigateToAdd} className='btn btn-primary mt-4 mx-3'>Add Employee</button>
+    }
     </div>
   );
 };
