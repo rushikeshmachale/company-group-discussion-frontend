@@ -5,6 +5,7 @@ import {  useNavigate } from "react-router-dom";
 import MessageService from "../services/MessageService";
 import ClearIcon from '@mui/icons-material/Clear';
 import MyGroupService from "../services/MyGroupService";
+import EditIcon from '@mui/icons-material/Edit';
 
 
 
@@ -45,6 +46,13 @@ const DashBoard = () => {
           try {
             const fetchedAllGroups = await MyGroupService.getAllGroups();
             setAllGroups(fetchedAllGroups); // Update all groups state
+            if (fetchedAllGroups.length > 0) {
+              // Automatically select the first group from the fetched groups
+              const firstGroup = fetchedAllGroups[0];
+              setSelectedGroup(firstGroup);
+              fetchMessages(firstGroup.id);
+              setGroupName(firstGroup.name);
+            }
           } catch (error) {
             console.error('Error fetching all groups:', error);
           }
@@ -139,12 +147,12 @@ const DashBoard = () => {
      <div className="container-fluid h-100">
        <div className="row h-100">
 
-         <div className="col-12 top-div d-flex align-items-center justify-content-between px-3">
+         <div className="col-12 top-div d-flex align-items-center justify-content-between px-3 bg-gradient">
             <div className="w-25">
-                <span>Hello  {employee.username}!</span>
+                <span className="fw-bold">Hello  {employee.username}!</span>
             </div>
             <div className="w-75 text-left d-flex align-items-center justify-content-between">
-                <span>{groupName}</span>
+                <span className="fw-bold">{groupName}</span>
             <div>
                 
             <button className="btn btn-info" onClick={()=>handleInfoClick(selectedGroup)}>Info</button>
@@ -163,26 +171,28 @@ const DashBoard = () => {
     <div>
       <input type="text" className="form-control mb-3" placeholder="Search..." />
       <table className="table table-hover">
-        <thead>
-          <tr>
-            <th>Sr.No</th>
-            <th>Name</th>
-            <th>Type</th>
-        
-          </tr>
-        </thead>
-        <tbody>
-          {allGroups.map((group) => (
-            <tr key={group.id} onClick={() => handleGroupClick(group)}
-            className={selectedGroup && selectedGroup.id === group.id ? 'table-success' : ''}>
-              <td>{group.id}</td>
-              <td >{group.name}</td>
-              <td>{group.type}</td>
-              
-            </tr>
-          ))}
-        </tbody>
-      </table>
+  <thead>
+    <tr>
+      <th>Sr.No</th>
+      <th>Name</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    {allGroups.map((group, index) => (
+      <tr
+        key={group.id}
+        onClick={() => handleGroupClick(group)}
+        className={selectedGroup && selectedGroup.id === group.id ? 'table-success' : ''}
+      >
+        <td>{index + 1}</td>
+        <td>{group.name}</td>
+        <td>{group.type}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
     </div>
 
 
@@ -196,12 +206,10 @@ const DashBoard = () => {
       messages.map((message, index) => (
         <div key={index} className={`message ${message.employee.id === employee.id ? 'sent' : 'received'}`}>
           <div className={`message-content ${message.employee.id === employee.id ? 'sent-message' : 'received-message'} p-3 rounded mb-2`}>
-            <div className="message-info d-flex justify-content-between align-items-center mb-1">
-              <span className="message-sender fw-bold">{message.employee.id === employee.id ? 'You' : message.employee.username}</span>
-              <span className="message-timestamp text-muted">{new Date(message.localDateTime).toLocaleString()}</span>
-              
-                <ClearIcon onClick={()=>handleDeleteMessage(message.id)}></ClearIcon>
-              
+            <div className="message-info d-flex  mb-1">
+              <span className="message-sender fw-bold me-2">{message.employee.id === employee.id ? 'You' : message.employee.username}</span>
+              <span className="message-timestamp text-muted me-5 ms-4">{new Date(message.localDateTime).toLocaleString()}</span>
+               <span>  <ClearIcon fontSize="small" className="me-2" onClick={()=>handleDeleteMessage(message.id)}></ClearIcon> </span>
             </div>
             <div className="message-text">
               {message.text}
