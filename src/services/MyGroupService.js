@@ -14,7 +14,7 @@ const MyGroupService = {
   },
 
   createGroup: async (group) => {
-    const response = await axios.post(`${BASE_URL}/groups`, group);
+    const response = await axios.post(`${BASE_URL}`, group);
     return response.data;
   },
 

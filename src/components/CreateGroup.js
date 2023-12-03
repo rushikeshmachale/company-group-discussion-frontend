@@ -19,7 +19,7 @@ const CreateGroup = () => {
     const handleSubmit=async(e)=>{
         e.preventDefault()
 
-        const response = await MyGroupService.createGroup(group).then(()=>navigate('/admin/dashboard'))
+        const response = await MyGroupService.createGroup(group).then(()=>navigate(`/admin/dashboard/add/${id}`))
         console.log(response);
     }
     
@@ -46,22 +46,23 @@ const CreateGroup = () => {
               <label for="type">Group Type:</label>
               <select name="type" id="type" className="form-control" value={type}
               onChange={handleChange}>
+              <option value='' selected disabled>Select type</option>
               <option value="Technical">Technical</option>
               <option value="Functional">Functional</option>
               </select>
             </div>
 
             <div class="form-group">
-              <label for="department">Group ID:</label>
-              <input
-                type="number"
-                onChange={handleChange}
-                class="form-control"
-                id="id" value={id}
-                name="id"
-                required
-              ></input>
-            </div>
+            <label for="groupName">Group ID:</label>
+            <input
+              type="text"
+              class="form-control"
+              onChange={handleChange}
+              id="id" value={id}
+              name="id"
+              required
+            ></input>
+          </div>
 
 
             <div className="text-center">
