@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import {  useNavigate } from "react-router-dom";
-import ClearIcon from '@mui/icons-material/Clear';
+import InfoIcon from '@mui/icons-material/Info';
+import UpdateIcon from '@mui/icons-material/Update';
+import LogoutIcon from '@mui/icons-material/Logout';
 import MyGroupService from "../services/MyGroupService";
 import MessageService from "../services/MessageService";
+import SendIcon from '@mui/icons-material/Send';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const DashBoard = () => {
   const [employee, setEmployee] = useState('');
@@ -125,9 +129,26 @@ const DashBoard = () => {
             <div className="w-75 text-left d-flex align-items-center justify-content-between">
               <span className="fw-bold">{groupName}</span>
               <div>
-                <button className="btn btn-info" onClick={()=>handleInfoClick(selectedGroup)}>Info</button>
-                <button className="btn btn-success m-2" onClick={handleUpdate} >Update</button>
-                <button className="btn btn-danger " onClick={handleLogout} >Logout</button>
+              <InfoIcon
+            className="icon-button"
+            fontSize="large"
+            onClick={() => handleInfoClick(selectedGroup)}
+             />
+              <UpdateIcon
+            className="icon-button"
+            fontSize="large"
+            onClick={handleUpdate}
+          />
+          
+          <LogoutIcon
+            className="icon-button"
+            fontSize="large"
+            onClick={handleLogout}
+          />
+         
+                {/* <button className="btn btn-info" onClick={()=>handleInfoClick(selectedGroup)}>Info</button> */}
+                {/* <button className="btn btn-success m-2" onClick={handleUpdate} >Update</button>
+                <button className="btn btn-danger " onClick={handleLogout} >Logout</button> */}
               </div>
             </div>
           </div>
@@ -142,13 +163,7 @@ const DashBoard = () => {
                   onChange={handleSearch}
                 />
                 <table className="table table-hover">
-                  <thead>
-                    <tr>
-                      <th>Sr.No</th>
-                      <th>Name</th>
-                      <th>Type</th>
-                    </tr>
-                  </thead>
+                  
                   <tbody>
                     {filteredGroups.map((group, index) => (
                       <tr
@@ -156,7 +171,7 @@ const DashBoard = () => {
                         onClick={() => handleGroupClick(group)}
                         className={selectedGroup && selectedGroup.id === group.id ? 'table-success' : ''}
                       >
-                        <td>{index + 1}</td>
+                       
                         <td>{group.name}</td>
                         <td>{group.type}</td>
                       </tr>
@@ -176,7 +191,7 @@ const DashBoard = () => {
                       <div className="message-info d-flex  mb-1">
                         <span className="message-sender fw-bold me-2">{message.employee.id === employee.id ? 'You' : message.employee.username}</span>
                         <span className="message-timestamp text-muted me-5 ms-4">{new Date(message.localDateTime).toLocaleString()}</span>
-                        <span><ClearIcon fontSize="small" className="me-2" onClick={()=>handleDeleteMessage(message.id)}></ClearIcon></span>
+                         <DeleteIcon style={{ fontSize: '16px', color: 'red' } }onClick={()=>handleDeleteMessage(message.id)}></DeleteIcon>
                       </div>
                       <div className="message-text">
                         {message.text}
@@ -196,9 +211,11 @@ const DashBoard = () => {
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
               />
-              <button className="btn btn-primary m-1" onClick={handleSend}>
-                Send
-              </button>
+              <SendIcon
+          className="icon-button"
+          fontSize="large"
+          onClick={handleSend}
+        />
             </div>
           </div>
         </div>
