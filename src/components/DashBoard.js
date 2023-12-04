@@ -73,7 +73,7 @@ const DashBoard = () => {
   };
 
   const handleUpdate = () => {
-    navigate('update');
+    navigate(`update/${selectedGroup.id}`);
   };
 
   const handleLogout = () => {
@@ -85,7 +85,8 @@ const DashBoard = () => {
       const messageData = {
         text: messageInput,
         group: selectedGroup,
-        employee: employee
+        employee: employee,
+        localDateTime:new Date()
       };
 
       const response = await MessageService.createMessage(messageData);

@@ -23,7 +23,7 @@ function App() {
         <Route  path='user/dashboard' element={<UserDashBoard  />}/>
         <Route  path='admin/dashboard/create' element={<CreateGroup />}/>
         <Route  path='admin/dashboard/add/:id' element={<AddEmployee />}/>
-        <Route  path='admin/dashboard/update' element={<UpdateGroup  />}/>
+        <Route  path='admin/dashboard/update/:id' element={<UpdateGroup  />}/>
         <Route  path='admin/dashboard/info' element={<Info  />}/>
         <Route  path='user/dashboard/info' element={<Info  />}/>
         
