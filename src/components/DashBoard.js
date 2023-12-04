@@ -172,8 +172,8 @@ const DashBoard = () => {
                         className={selectedGroup && selectedGroup.id === group.id ? 'table-success' : ''}
                       >
                        
-                        <td>{group.name}</td>
-                        <td>{group.type}</td>
+                        <td>{group.name}-{group.type}</td>
+                        
                       </tr>
                     ))}
                   </tbody>

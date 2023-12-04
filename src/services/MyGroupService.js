@@ -9,7 +9,7 @@ const MyGroupService = {
   },
 
   getGroupById: async (id) => {
-    const response = await axios.get(`${BASE_URL}/groups/${id}`);
+    const response = await axios.get(`${BASE_URL}/${id}`);
     return response.data;
   },
 
@@ -19,17 +19,17 @@ const MyGroupService = {
   },
 
   updateGroup: async (group) => {
-    const response = await axios.put(`${BASE_URL}/groups/${group.id}`, group);
+    const response = await axios.put(`${BASE_URL}/${group.id}`, group);
     return response.data;
   },
 
   deleteGroupById: async (id) => {
-    const response = await axios.delete(`${BASE_URL}/groups/${id}`);
+    const response = await axios.delete(`${BASE_URL}/${id}`);
     return response.data;
   },
 
   findByType: async (type) => {
-    const response = await axios.get(`${BASE_URL}/groups?type=${type}`);
+    const response = await axios.get(`${BASE_URL}?type=${type}`);
     return response.data;
   },
 };

@@ -1,79 +1,77 @@
-import {useNavigate} from 'react-router-dom'
 import React, { useState } from "react";
 import MyGroupService from "../services/MyGroupService";
-
+import { Link } from 'react-router-dom'; // Import Link for navigation
+import AddEmployee from "./AddEmployee";
 
 const CreateGroup = () => {
+  const [newGroup, setNewGroup] = useState(null);
+  const [group, setGroup] = useState({
+    name: '',
+    type: ''
+  });
 
-    const navigate=useNavigate()
-    const [group,setGroup] = useState({
-        id:'',
-        name:'',
-        type:''
-    })
-    const {id,name,type} = group
+  const handleChange = (e) => {
+    setGroup({ ...group, [e.target.name]: e.target.value });
+  };
 
-    const handleChange=(e)=>{
-        setGroup({...group,[e.target.name]:e.target.value})
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await MyGroupService.createGroup(group);
+      setNewGroup(response);
+      console.log("New Group:", response); // Print newGroup in console
+    } catch (error) {
+      console.error("Error creating group:", error);
     }
-    const handleSubmit=async(e)=>{
-        e.preventDefault()
+  };
 
-        const response = await MyGroupService.createGroup(group).then(()=>navigate(`/admin/dashboard/add/${id}`))
-        console.log(response);
-    }
-    
   return (
     <div className="container">
-      <form action="" className="form-control my-5">
-        <h5 className=" text-center">Create Group</h5>
-        <div class="container my-5">
-          <form id="employeeForm">
-            <div class="form-group">
-              <label for="groupName">Group Name:</label>
-              <input
-                type="text"
-                class="form-control"
-                onChange={handleChange}
-                id="name" value={name}
-                name="name"
-                required
-              ></input>
-            </div>
-
-        
-            <div class="form-group">
-              <label for="type">Group Type:</label>
-              <select name="type" id="type" className="form-control" value={type}
-              onChange={handleChange}>
-              <option value='' selected disabled>Select type</option>
-              <option value="Technical">Technical</option>
-              <option value="Functional">Functional</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-            <label for="groupName">Group ID:</label>
+      <form onSubmit={handleSubmit} className="form-control my-5">
+        <h5 className="text-center">Create Group</h5>
+        <div className="container my-5">
+          <div className="form-group">
+            <label htmlFor="groupName">Group Name:</label>
             <input
               type="text"
-              class="form-control"
+              className="form-control"
               onChange={handleChange}
-              id="id" value={id}
-              name="id"
+              value={group.name}
+              name="name"
               required
-            ></input>
+            />
           </div>
 
+          <div className="form-group">
+            <label htmlFor="type">Group Type:</label>
+            <select
+              name="type"
+              id="type"
+              className="form-control"
+              value={group.type}
+              onChange={handleChange}
+            required>
+              <option value="" >
+                Select type
+              </option>
+              <option value="Technical">Technical</option>
+              <option value="Functional">Functional</option>
+            </select>
+          </div>
 
-            <div className="text-center">
-            <button type="button" class="btn btn-info my-2" onClick={handleSubmit}>
-            Create
+          <div className="text-center">
+            <button type="submit" className="btn btn-info my-2">
+              Create
             </button>
-            </div>
             
-          </form>
+          </div>
         </div>
       </form>
+
+      {newGroup && newGroup.id && (
+                <AddEmployee newGroupId={newGroup.id}></AddEmployee>
+            )}
     </div>
   );
 };

@@ -1,99 +1,120 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import GroupEmployeeService from "../services/GroupEmployeeService";
-import LoginService from "../services/LoginService";
-const AddEmployee = () => {
+import React, { useEffect, useState } from 'react';
+import EmployeeService from '../services/LoginService';
+import GroupEmployeeService from '../services/GroupEmployeeService';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
+
+const AddEmployee = ({ newGroupId }) => {
+  const [employees, setEmployees] = useState([]);
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [employee, setEmployee] = useState(null);
   const navigate = useNavigate();
-  const { id } = useParams();
 
-  const [member, setMember] = useState([]);
-
-  const [empl, setEmpl] = useState({
-    group_id: id,
-    employee_id: "",
-  });
-  const { group_id, employee_id } = empl;
   useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    await LoginService.getAllEmployees()
-      .then((res) => {
-        // if(res.role==='user')
-        setMember(res);
-      })
-      .catch((e) => console.log(e));
+    const getEmployee = async () => {
+      const employeeData = Cookies.get('employee');
+      if (employeeData) {
+        const parsedEmployee = JSON.parse(employeeData);
+        setEmployee(parsedEmployee);
+        console.log(parsedEmployee.id);
+      }
     };
+  
+    const getAllEmployees = async () => {
+      try {
+        const response = await EmployeeService.getAllEmployees();
+        setEmployees(response);
+        console.log(response); // Output the fetched employee data
+      } catch (error) {
+        console.error('Error fetching employees:', error);
+      }
+    };
+  
+    getEmployee();
+    getAllEmployees();
+  }, []);
+  
 
-  // const selectedUser = (e) => {
-  //   setEmployee_id(e.id);
-  //   console.log(employee_id);
-  // };
-  const handleChange = (e) => {
-    setEmpl({ ...empl, [e.target.name]: e.target.value });
+  const handleCheckboxChange = (employeeId) => {
+    setSelectedEmployees((prevSelectedEmployees) => {
+      if (prevSelectedEmployees.includes(employeeId)) {
+        return prevSelectedEmployees.filter((id) => id !== employeeId);
+      } else {
+        return [...prevSelectedEmployees, employeeId];
+      }
+    });
   };
-  const handleSubmit = async (e) => {
+
+  const handleOnSubmit = async (e) => {
     e.preventDefault();
-    await axios
-      .post("http://localhost:8888/groupemployee/addemployee", empl)
-      .then(() => navigate("/admin/dashboard"))
-      .catch(() => console.log("error"));
+    selectedEmployees.push(employee.id)
+    console.log(selectedEmployees);
+    try {
+      const request = {
+        group_id: newGroupId,
+        employee_ids: selectedEmployees.map(Number)
+
+
+      };
+      console.log(typeof(selectedEmployees.map(Number)));
+
+      const response = await GroupEmployeeService.addemployeesToGroup(request);
+      console.log('Response:', response);
+      alert('Employees added successfully!');
+
+      navigate(employee.role === 'admin' ? '/admin/dashboard' : '/user/dashboard');
+    } catch (error) {
+      console.error('Error adding employees to group:', error);
+    }
   };
 
   return (
-    <div className="container">
-      <form className="form-control my-5">
-        <h6 className=" text-center my-4">Add Employees to group</h6>
-        <div>
-          <input
-            type="text"
-            className="form-control my-2"
-            name="group_id"
-            value={group_id}
-            onChange={handleChange}
-            placeholder="Enter gropu id here"
-          />
-          <input
-            type="text"
-            className="form-control"
-            name="employee_id"
-            value={employee_id}
-            onChange={handleChange}
-            placeholder="Enter employee id here"
-          />
-        </div>
-
-        <button className="btn btn-info my-2" onClick={handleSubmit}>
-          Submit
-        </button>
-
-        <h6 className=" text-center my-4">Members</h6>
-
-        <table className="table ">
-          <thead>
-            <tr>
-              <th>Employee id</th>
-              <th>Employee name</th>
-            </tr>
-          </thead>
-          { member.map((x, index) => (
-            <tbody key={index}>
-            {
-
-              x.role==='user' &&
-              <tr>
-              <td>{x.id}</td>
-              <td>{x.username}</td>
-              </tr>
-            }
-            </tbody>
-          ))}
-        </table>
-      </form>
+    <div className="container mt-4">
+    <h3 className="mb-4">Select Employees</h3>
+    <div className="card">
+      <div className="card-body" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+        <form onSubmit={handleOnSubmit}>
+          <div className="table-responsive">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Select</th>
+                </tr>
+              </thead>
+              <tbody>
+                {employees.map((employee) => (
+                  employee.role === 'user' && (
+                    <tr key={employee.id}>
+                      <td>{employee.username}</td>
+                      <td>
+                        <div className="form-check text-end">
+                          <input
+                            type="checkbox"
+                            className="form-check-input border border-primary"
+                            id={`employee-${employee.id}`}
+                            value={employee.id}
+                            onChange={() => handleCheckboxChange(employee.id)}
+                            checked={selectedEmployees.includes(employee.id)}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </form>
+      </div>
     </div>
-  );
+    <div className="mt-3">
+      <button type="submit" className="btn btn-primary" onClick={handleOnSubmit}>
+        Add Selected Employees
+      </button>
+    </div>
+  </div>
+);
 };
 
 export default AddEmployee;
