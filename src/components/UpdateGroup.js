@@ -1,37 +1,91 @@
-import React from 'react'
+
+import {useNavigate} from 'react-router-dom'
+import MessageService from '../services/Message.service';
+import React, { useState } from "react";
+
+const UpdateGroup = () =>{
+
+  const navigate=useNavigate()
+      const [group,setGroup] = useState({
+        groupId: '',
+        name: '',
+        department: ''
+      })
+     
+      const {groupId,name,department} = group
 
 
-const UpdateGroup = () => {
+      const handleChange=(e)=>{
+          setGroup({...group,[e.target.name]:e.target.value})
+      };
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        const response = await MessageService.updateGroup(group).then(()=>navigate(`/admin/dashboard/add/${groupId}`))
+        console.log(response);
+
+      }
     return (
-        <div>
-        <h2>Update Employee Details</h2>
+
+    <div className='container'>
+       <form action="" className="form-control my-5">
+       <h2>Update Group Details</h2>
+       <div class="container my-5">
+       
     
         <form id="updateEmployeeForm">
-            <label for="employeeId">Employee ID:</label>
-            <input type="text" id="employeeId" name="employeeId" required=""></input>
+          <div class="form-group">
+            <label for="employeeId">Group ID:</label>
+            <input 
+            type="text"
+            onChange={handleChange} 
+            class="form-control"
+            id="groupId" value={groupId}
+            name="groupId" 
+            required="" >
+
+            </input>
+          </div>
+           
+          <div class="form-group">
+            <label for="groupName">Group Name:</label>
+            <input 
+            type="text" 
+            onChange={handleChange} 
+            class="form-control"
+            id="groupName" value={name}
+            name="groupName"
+             required="">
+
+             </input>
+          </div>
     
-            <label for="firstName">First Name:</label>
-            <input type="text" id="firstName" name="firstName" required=""></input>
-    
-            <label for="lastName">Last Name:</label>
-            <input type="text" id="lastName" name="lastName" required=""></input>
-    
+          <div class="form-group">
             <label for="department">Department:</label>
-            <input type="text" id="department" name="department" required=""></input>
+            <input 
+            type="text" 
+            onChange={handleChange}
+            class="form-control"
+            id="department" value={department}
+            name="department" 
+            required="">
+
+            </input>
+          </div>
+           
     
-            <label for="position">Position:</label>
-            <input type="text" id="position" name="position" required=""></input>
+          <div className="text-center">
+            <button type="button" class="btn btn-info " onClick={handleSubmit}>
+            Update Group
+            </button>
+          </div>
+          
+
+       </form>
+       </div>
+     </form>
+    </div>
     
-            <button type="button" onclick="updateEmployee()">Update Employee</button>
-        </form>
-    
-        
-        </div>
-    
-      )
-      }
-    
-    
-    export default UpdateGroup
-    
+    );
+      };
+   export default UpdateGroup;
     

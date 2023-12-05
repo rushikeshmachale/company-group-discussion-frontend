@@ -127,9 +127,9 @@ const Info = () => {
                         <td>{employee.username}</td>
                         <td>{employee.role}</td>
                         <td>
-                          <button onClick={() => deleteEmployee(employee.id)}>
-                            <DeleteIcon style={{ fontSize: '16px', color: 'red' }} />
-                          </button>
+                          <DeleteIcon style={{ fontSize: '16px', color: 'red' }
+                        } onClick={() => deleteEmployee(employee.id)} />
+                          
                         </td>
                       </tr>
                     ))}

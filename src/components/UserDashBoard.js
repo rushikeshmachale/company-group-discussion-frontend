@@ -4,6 +4,11 @@ import {  useNavigate } from "react-router-dom";
 import GroupEmployeeService from "../services/GroupEmployeeService";
 import MessageService from "../services/MessageService";
 import ClearIcon from '@mui/icons-material/Clear';
+import LogoutIcon from '@mui/icons-material/Logout';
+import SendIcon from '@mui/icons-material/Send';
+import DeleteIcon from '@mui/icons-material/Delete';
+import InfoIcon from '@mui/icons-material/Info';
+
 
 
 
@@ -123,8 +128,13 @@ const DashBoard = () => {
                 <span>{groupName}</span>
             <div>
                 
-            <button className="btn btn-info" onClick={()=>handleInfoClick(selectedGroup)}>Info</button>
-               <button className="btn btn-danger " onClick={handleLogout} >Logout</button>
+            <InfoIcon
+            className="icon-button"
+            fontSize="large" onClick={()=>handleInfoClick(selectedGroup)}/>
+
+            <LogoutIcon
+            className="icon-button"
+            fontSize="large" onClick={handleLogout} />
                          
             </div>
             </div>
@@ -138,19 +148,11 @@ const DashBoard = () => {
     <div>
       <input type="text" className="form-control mb-3" placeholder="Search..." />
       <table className="table table-hover">
-        <thead>
-          <tr>
-            <th>Sr.No</th>
-            <th>Name</th>
-            <th>Type</th>
-        
-          </tr>
-        </thead>
-        <tbody>
+       <tbody>
           {groups.map((group) => (
             <tr key={group.id} onClick={() => handleGroupClick(group)}
             className={selectedGroup && selectedGroup.id === group.id ? 'table-success' : ''}>
-              <td>{group.id}</td>
+           
               <td >{group.name}</td>
               <td>{group.type}</td>
               
@@ -174,7 +176,7 @@ const DashBoard = () => {
               <span className="message-sender fw-bold">{message.employee.id === employee.id ? 'You' : message.employee.username}</span>
               <span className="message-timestamp text-muted">{new Date(message.localDateTime).toLocaleString()}</span>
               { message.employee.id === employee.id  &&(
-                <ClearIcon onClick={()=> handleDeleteMessage(message.id)}></ClearIcon>)
+               <DeleteIcon style={{ fontSize: '16px', color: 'red' } } onClick={()=> handleDeleteMessage(message.id)}></DeleteIcon>)
               }
                 
               
@@ -201,9 +203,10 @@ const DashBoard = () => {
             value={messageInput}
             onChange={(e) => setMessageInput(e.target.value)}
           />
-          <button className="btn btn-primary m-1" onClick={handleSend}>
-            Send
-          </button>
+        <SendIcon
+          className="icon-button"
+          fontSize="large" onClick={handleSend}/>
+           
                 </div>
             </div>
 
