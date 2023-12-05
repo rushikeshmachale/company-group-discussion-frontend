@@ -9,6 +9,9 @@ import MessageService from "../services/MessageService";
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
+
+
+
 const DashBoard = () => {
   const [employee, setEmployee] = useState('');
   const [messages, setMessages] = useState([]);
@@ -126,10 +129,10 @@ const DashBoard = () => {
           <div className="col-12 top-div d-flex align-items-center justify-content-between px-3 bg-gray bg-darken-xs
 ">
             <div className="w-25">
-              <span className="fw-bold">Hello  {employee.username}!</span>
+              <span className=" fs-5">Hello  {employee.username}!</span>
             </div>
             <div className="w-75 text-left d-flex align-items-center justify-content-between">
-              <span className="fw-bold">{groupName}</span>
+              <span className="fw-bold fs-5">{groupName}</span>
               <div>
               <IconButton className="text-black" onClick={() => handleInfoClick(selectedGroup)}>
   <InfoIcon fontSize="large" />
@@ -143,9 +146,7 @@ const DashBoard = () => {
   <LogoutIcon fontSize="medium" />
 </IconButton>
          
-                {/* <button className="btn btn-info" onClick={()=>handleInfoClick(selectedGroup)}>Info</button> */}
-                {/* <button className="btn btn-success m-2" onClick={handleUpdate} >Update</button>
-                <button className="btn btn-danger " onClick={handleLogout} >Logout</button> */}
+             
               </div>
             </div>
           </div>
