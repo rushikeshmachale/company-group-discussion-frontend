@@ -18,8 +18,8 @@ const MyGroupService = {
     return response.data;
   },
 
-  updateGroup: async (group) => {
-    const response = await axios.put(`${BASE_URL}/${group.id}`, group);
+  updateGroup: async (id,group) => {
+    const response = await axios.put(`${BASE_URL}/${id}`, group);
     return response.data;
   },
 

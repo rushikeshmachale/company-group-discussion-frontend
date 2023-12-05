@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Link, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import MyGroupService from '../services/MyGroupService';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 const Info = () => {
@@ -146,7 +145,8 @@ const Info = () => {
                   <tr>
                     <th>Name</th>
                     <th>Role</th>
-                    <th>Action</th>
+                    {employee.id ==='admin' && (<th>Action</th>)}
+                    
                   </tr>
                 </thead>
                 <tbody>
@@ -156,11 +156,12 @@ const Info = () => {
                       <tr key={index}>
                         <td>{employee.username}</td>
                         <td>{employee.role}</td>
-                        <td>
+                        {employee.id==='admin' && (<td>
                           <DeleteIcon style={{ fontSize: '16px', color: 'red' }
                         } onClick={() => deleteEmployee(employee.id)} />
                           
-                        </td>
+                        </td> )}
+                        
                       </tr>
                     ))}
                 </tbody>

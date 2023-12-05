@@ -1,27 +1,36 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import MessageService from "../services/MessageService";
 import React, { useEffect, useState } from "react";
 import MyGroupService from "../services/MyGroupService";
 
 const UpdateGroup = () => {
   const navigate = useNavigate();
-  const [groupData,setGroupData] = useState([])
 
   const {id} = useParams()
   const [group, setGroup] = useState({
-    groupId: "",
+    groupId:id,
     name: "",
     department: "",
   });
 
-  const { groupId, name, department } = group;
+  const { name, department } = group;
 
-  useEffect(()=>{loadGroup()},[])
+  useEffect(()=>{
+
+    
   const loadGroup = async () => {
     const res = await MyGroupService.getGroupById(id);
     setGroup(res)
     console.log(res)
   };
+    
+    
+    loadGroup()
+  
+  }
+    
+    ,[id])
+
+
 
   const handleChange = (e) => {
     setGroup({ ...group, [e.target.name]: e.target.value });
@@ -39,18 +48,7 @@ const UpdateGroup = () => {
         <h2>Update Group Details</h2>
         <div class="container my-5">
           <form id="updateEmployeeForm">
-            <div class="form-group">
-              <label for="employeeId">Group ID:</label>
-              <input
-                type="text"
-                onChange={handleChange}
-                class="form-control"
-                id="groupId"
-                value={id}
-                name="groupId"
-                required=""
-              ></input>
-            </div>
+            
 
             <div class="form-group">
               <label for="groupName">Group Name:</label>
