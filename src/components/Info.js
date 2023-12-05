@@ -3,7 +3,8 @@ import Cookies from 'js-cookie';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Link, useNavigate } from 'react-router-dom';
-
+import MyGroupService from '../services/MyGroupService';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 const Info = () => {
   const [group, setGroup] = useState(null);
   const navigate = useNavigate();
@@ -66,6 +67,28 @@ const Info = () => {
       navigate(`/admin/dashboard/add/${group.id}`)
   }
   }
+
+
+  const handleDeletegroup =async(id)=>{
+    try {
+     await MyGroupService.deleteGroupById(id);
+     console.log('deleted');
+     if(employee.role==='admin'){
+      navigate('/admin/dashboard')
+  }else{
+    navigate('/user/dashboard')
+  }
+     
+    
+
+    } catch (error) {
+
+      console.error("Prob in dlt grp",error);
+      
+    }
+
+
+  }
   return (
     <div className="container mt-4">
       <h3 className="mb-4">Group Information</h3>
@@ -80,7 +103,14 @@ const Info = () => {
                   <p className="card-text">Type: {group.type}</p>
                 </div>
               </div>
+              {employee.role === 'admin' && (
+              
+                <button className='btn btn-danger' onClick={()=>handleDeletegroup(group.id)}>Delete</button>
+        // <button className='btn btn-danger mt-4' onClick={()=>handleDeletegroup(group.id)} >Delete Group</button>
+      )}
             </div>
+            {/* Delete group button visible only to the admin */}
+     
             <div className="col-md-6">
               <div className="card">
                 <div className="card-body">
@@ -139,8 +169,17 @@ const Info = () => {
           </div>
         </div>
       )}
-      <button className='btn btn-primary mt-4' onClick={handleBack}>Back</button>
-      {employee.role==='admin' &&
+<ArrowBackIcon
+  className='mt-4 ' // Custom classes
+  fontSize='large' // Font size
+  style={{
+    // Custom styles
+    color: 'black', // Change icon color
+    cursor: 'pointer', // Add pointer cursor on hover
+    marginRight: '10px', // Add margin-right
+  }}
+  onClick={handleBack} // onClick function
+/>      {employee.role==='admin' &&
       <button onClick={navigateToAdd} className='btn btn-primary mt-4 mx-3'>Add Employee</button>
     }
     </div>

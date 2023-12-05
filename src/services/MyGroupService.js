@@ -24,8 +24,8 @@ const MyGroupService = {
   },
 
   deleteGroupById: async (id) => {
-    const response = await axios.delete(`${BASE_URL}/${id}`);
-    return response.data;
+     await axios.delete(`${BASE_URL}/${id}`);
+   
   },
 
   findByType: async (type) => {

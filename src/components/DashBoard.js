@@ -8,7 +8,7 @@ import MyGroupService from "../services/MyGroupService";
 import MessageService from "../services/MessageService";
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import IconButton from '@mui/material/IconButton';
 const DashBoard = () => {
   const [employee, setEmployee] = useState('');
   const [messages, setMessages] = useState([]);
@@ -123,29 +123,25 @@ const DashBoard = () => {
     <div>
       <div className="container-fluid h-100">
         <div className="row h-100">
-          <div className="col-12 top-div d-flex align-items-center justify-content-between px-3 bg-gradient">
+          <div className="col-12 top-div d-flex align-items-center justify-content-between px-3 bg-gray bg-darken-xs
+">
             <div className="w-25">
               <span className="fw-bold">Hello  {employee.username}!</span>
             </div>
             <div className="w-75 text-left d-flex align-items-center justify-content-between">
               <span className="fw-bold">{groupName}</span>
               <div>
-              <InfoIcon
-            className="icon-button"
-            fontSize="large"
-            onClick={() => handleInfoClick(selectedGroup)}
-             />
-              <UpdateIcon
-            className="icon-button"
-            fontSize="large"
-            onClick={handleUpdate}
-          />
+              <IconButton className="text-black" onClick={() => handleInfoClick(selectedGroup)}>
+  <InfoIcon fontSize="large" />
+</IconButton>
+
+<IconButton className="text-black" onClick={handleUpdate}>
+  <UpdateIcon fontSize="large" />
+</IconButton>
           
-          <LogoutIcon
-            className="icon-button"
-            fontSize="large"
-            onClick={handleLogout}
-          />
+          <IconButton className="bg-danger text-black " onClick={handleLogout}>
+  <LogoutIcon fontSize="medium" />
+</IconButton>
          
                 {/* <button className="btn btn-info" onClick={()=>handleInfoClick(selectedGroup)}>Info</button> */}
                 {/* <button className="btn btn-success m-2" onClick={handleUpdate} >Update</button>
@@ -183,7 +179,7 @@ const DashBoard = () => {
               <button className="btn btn-primary btn-block mt-3" onClick={handleCreate} >Create Group</button>
             </div>
           </div>
-          <div className="col-md-9 chat-window">
+          <div className="col-md-9 chat-window bg-cyan bg-lighten-xl">
             <div className="chat-messages">
               {messages ? (
                 messages.map((message, index) => (

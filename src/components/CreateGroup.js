@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import MyGroupService from "../services/MyGroupService";
-import { Link } from 'react-router-dom'; // Import Link for navigation
 import AddEmployee from "./AddEmployee";
 
 const CreateGroup = () => {
