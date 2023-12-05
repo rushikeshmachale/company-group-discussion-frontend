@@ -1,27 +1,27 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import {  useNavigate } from "react-router-dom";
-import InfoIcon from '@mui/icons-material/Info';
-import UpdateIcon from '@mui/icons-material/Update';
-import LogoutIcon from '@mui/icons-material/Logout';
+import { useNavigate } from "react-router-dom";
+import InfoIcon from "@mui/icons-material/Info";
+import UpdateIcon from "@mui/icons-material/Update";
+import LogoutIcon from "@mui/icons-material/Logout";
 import MyGroupService from "../services/MyGroupService";
 import MessageService from "../services/MessageService";
-import SendIcon from '@mui/icons-material/Send';
-import DeleteIcon from '@mui/icons-material/Delete';
-
+import SendIcon from "@mui/icons-material/Send";
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
 const DashBoard = () => {
-  const [employee, setEmployee] = useState('');
+  const [employee, setEmployee] = useState("");
   const [messages, setMessages] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
-  const [messageInput, setMessageInput] = useState('');
-  const [groupName, setGroupName] = useState('');
+  const [messageInput, setMessageInput] = useState("");
+  const [groupName, setGroupName] = useState("");
   const [allGroups, setAllGroups] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const getEmployee = async () => {
-      const employeeData = Cookies.get('employee');
+      const employeeData = Cookies.get("employee");
       if (employeeData) {
         const parsedEmployee = await JSON.parse(employeeData);
         setEmployee(parsedEmployee);
@@ -39,7 +39,7 @@ const DashBoard = () => {
           setGroupName(firstGroup.name);
         }
       } catch (error) {
-        console.error('Error fetching all groups:', error);
+        console.error("Error fetching all groups:", error);
       }
     };
 
@@ -50,9 +50,9 @@ const DashBoard = () => {
   const fetchMessages = async (id) => {
     try {
       const response = await MessageService.getMessagesByGroupId(id);
-      setMessages(response); 
+      setMessages(response);
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.error("Error fetching messages:", error);
     }
   };
 
@@ -64,34 +64,34 @@ const DashBoard = () => {
 
   const handleInfoClick = async (group) => {
     setSelectedGroup(group);
-    Cookies.set('group',JSON.stringify(group));
-    navigate('info');
+    Cookies.set("group", JSON.stringify(group));
+    navigate("info");
   };
 
   const handleCreate = () => {
-    navigate('create');
+    navigate("create");
   };
 
   const handleUpdate = () => {
-    navigate('update');
+    navigate(`update/${selectedGroup.id}`);
   };
 
   const handleLogout = () => {
-    navigate('/');
+    navigate("/");
   };
 
   const handleSend = async () => {
     try {
       const messageData = {
-        text:messageInput,
-        group:selectedGroup,
-        employee:employee,
-        localDateTime:new Date()
+        text: messageInput,
+        group: selectedGroup,
+        employee: employee,
+        localDateTime: new Date(),
       };
 
       const response = await MessageService.createMessage(messageData);
-      setMessages([...messages,response]);
-      setMessageInput('');
+      setMessages([...messages, response]);
+      setMessageInput("");
     } catch (error) {
       console.error("Error Sending Message");
     }
@@ -123,30 +123,34 @@ const DashBoard = () => {
     <div>
       <div className="container-fluid h-100">
         <div className="row h-100">
-          <div className="col-12 top-div d-flex align-items-center justify-content-between px-3 bg-gradient">
+          <div
+            className="col-12 top-div d-flex align-items-center justify-content-between px-3 bg-gray bg-darken-xs
+"
+          >
             <div className="w-25">
-              <span className="fw-bold">Hello  {employee.username}!</span>
+              <span className="fw-bold">Hello {employee.username}!</span>
             </div>
             <div className="w-75 text-left d-flex align-items-center justify-content-between">
               <span className="fw-bold">{groupName}</span>
               <div>
-              <InfoIcon
-            className="icon-button"
-            fontSize="large"
-            onClick={() => handleInfoClick(selectedGroup)}
-             />
-              <UpdateIcon
-            className="icon-button"
-            fontSize="large"
-            onClick={handleUpdate}
-          />
-          
-          <LogoutIcon
-            className="icon-button"
-            fontSize="large"
-            onClick={handleLogout}
-          />
-         
+                <IconButton
+                  className="text-black"
+                  onClick={() => handleInfoClick(selectedGroup)}
+                >
+                  <InfoIcon fontSize="large" />
+                </IconButton>
+
+                <IconButton className="text-black" onClick={handleUpdate}>
+                  <UpdateIcon fontSize="large" />
+                </IconButton>
+
+                <IconButton
+                  className="bg-danger text-black "
+                  onClick={handleLogout}
+                >
+                  <LogoutIcon fontSize="medium" />
+                </IconButton>
+
                 {/* <button className="btn btn-info" onClick={()=>handleInfoClick(selectedGroup)}>Info</button> */}
                 {/* <button className="btn btn-success m-2" onClick={handleUpdate} >Update</button>
                 <button className="btn btn-danger " onClick={handleLogout} >Logout</button> */}
@@ -164,39 +168,65 @@ const DashBoard = () => {
                   onChange={handleSearch}
                 />
                 <table className="table table-hover">
-                  
                   <tbody>
                     {filteredGroups.map((group, index) => (
                       <tr
                         key={group.id}
                         onClick={() => handleGroupClick(group)}
-                        className={selectedGroup && selectedGroup.id === group.id ? 'table-success' : ''}
+                        className={
+                          selectedGroup && selectedGroup.id === group.id
+                            ? "table-success"
+                            : ""
+                        }
                       >
-                       
-                        <td>{group.name}</td>
-                        <td>{group.type}</td>
+                        <td>
+                          {group.name}-{group.type}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-              <button className="btn btn-primary btn-block mt-3" onClick={handleCreate} >Create Group</button>
+              <button
+                className="btn btn-primary btn-block mt-3"
+                onClick={handleCreate}
+              >
+                Create Group
+              </button>
             </div>
           </div>
-          <div className="col-md-9 chat-window">
+          <div className="col-md-9 chat-window bg-cyan bg-lighten-xl">
             <div className="chat-messages">
               {messages ? (
                 messages.map((message, index) => (
-                  <div key={index} className={`message ${message.employee.id === employee.id ? 'sent' : 'received'}`}>
-                    <div className={`message-content ${message.employee.id === employee.id ? 'sent-message' : 'received-message'} p-3 rounded mb-2`}>
+                  <div
+                    key={index}
+                    className={`message ${
+                      message.employee.id === employee.id ? "sent" : "received"
+                    }`}
+                  >
+                    <div
+                      className={`message-content ${
+                        message.employee.id === employee.id
+                          ? "sent-message"
+                          : "received-message"
+                      } p-3 rounded mb-2`}
+                    >
                       <div className="message-info d-flex  mb-1">
-                        <span className="message-sender fw-bold me-2">{message.employee.id === employee.id ? 'You' : message.employee.username}</span>
-                        <span className="message-timestamp text-muted me-5 ms-4">{new Date(message.localDateTime).toLocaleString()}</span>
-                         <DeleteIcon style={{ fontSize: '16px', color: 'red' } }onClick={()=>handleDeleteMessage(message.id)}></DeleteIcon>
+                        <span className="message-sender fw-bold me-2">
+                          {message.employee.id === employee.id
+                            ? "You"
+                            : message.employee.username}
+                        </span>
+                        <span className="message-timestamp text-muted me-5 ms-4">
+                          {new Date(message.localDateTime).toLocaleString()}
+                        </span>
+                        <DeleteIcon
+                          style={{ fontSize: "16px", color: "red" }}
+                          onClick={() => handleDeleteMessage(message.id)}
+                        ></DeleteIcon>
                       </div>
-                      <div className="message-text">
-                        {message.text}
-                      </div>
+                      <div className="message-text">{message.text}</div>
                     </div>
                   </div>
                 ))
@@ -213,10 +243,10 @@ const DashBoard = () => {
                 onChange={(e) => setMessageInput(e.target.value)}
               />
               <SendIcon
-          className="icon-button"
-          fontSize="large"
-          onClick={handleSend}
-        />
+                className="icon-button"
+                fontSize="large"
+                onClick={handleSend}
+              />
             </div>
           </div>
         </div>
