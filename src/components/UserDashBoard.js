@@ -17,6 +17,8 @@ const DashBoard = () => {
   const [allGroups, setAllGroups] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const [userInitials, setUserInitials] = useState('');
+
 
   useEffect(() => {
     const getEmployee = async () => {
@@ -24,6 +26,19 @@ const DashBoard = () => {
       if (employeeData) {
         const parsedEmployee = await JSON.parse(employeeData);
         setEmployee(parsedEmployee);
+        const initials = calculateInitials(parsedEmployee.username);
+        setUserInitials(initials);
+      }
+    };
+
+    const calculateInitials = (name) => {
+      const nameParts = name.split(' ');
+      if (nameParts.length === 1) {
+        return nameParts[0].charAt(0).toUpperCase();
+      } else {
+        const firstNameInitial = nameParts[0].charAt(0).toUpperCase();
+        const lastNameInitial = nameParts[nameParts.length - 1].charAt(0).toUpperCase();
+        return `${firstNameInitial}${lastNameInitial}`;
       }
     };
 
@@ -57,6 +72,14 @@ const DashBoard = () => {
     fetchMessages(group.id);
     setGroupName(group.name);
   };
+  const calculateGroupInitials = (groupName) => {
+    const initials = groupName
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase())
+      .join('');
+    return initials;
+  };
+  
 
   const handleInfoClick = async (group) => {
     setSelectedGroup(group);
@@ -110,6 +133,24 @@ const DashBoard = () => {
       group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       group.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  const getGroupProfilePicture = (initials) => {
+    // Using DiceBear Avatars
+    const avatarBaseUrl = 'https://avatars.dicebear.com/api/avataaars/';
+    
+    // You can customize the options based on your preference
+    const options = {
+      width: 50, // Adjust the width of the avatar
+      height: 50, // Adjust the height of the avatar
+      background: 'transparent', // Background color
+      color: '#3498db', // Color of the avatar
+      fontSize: 25, // Font size of initials
+      fontWeight: 'bold', // Font weight of initials
+      format: 'svg', // Image format (svg, png, etc.)
+    };
+  
+    const avatarUrl = `${avatarBaseUrl}${initials}.svg?options=${JSON.stringify(options)}`;
+    return avatarUrl;
+  };
 
   return (
     <div>
@@ -119,9 +160,27 @@ const DashBoard = () => {
             <div className="w-25">
               <span className="fw-bold">Hello  {employee.username}!</span>
             </div>
+            <div className="w-25">
+             {userInitials && (
+                         <div className="profile-initials">
+                          {userInitials}
+                          </div>
+                         )}
+</div>
             <div className="w-75 text-left d-flex align-items-center justify-content-between">
-              <span className="fw-bold">{groupName}</span>
+              <span className="fw-bold">{groupName}
+             
+              </span>
+             
+             <span className="w-75">
+                          {calculateGroupInitials(groupName) && (
+                            <div className="profile-initials">
+                              {calculateGroupInitials(groupName)}
+                            </div>
+                          )}
+                        </span>
               <div>
+                
 
               <IconButton className="text-black" onClick={() => handleInfoClick(selectedGroup)}>
   <InfoIcon fontSize="large" />
@@ -151,6 +210,7 @@ const DashBoard = () => {
                 <table className="table table-hover">
                   
                   <tbody>
+                    
                     {filteredGroups.map((group, index) => (
                       <tr
                       key={group.id}
@@ -161,7 +221,17 @@ const DashBoard = () => {
                           : ""
                       }
                     >
+                                            <td >
+                                              <div className="w-25">
+                          {calculateGroupInitials(group.name) && (
+                            <div className="profile-initials">
+                              {calculateGroupInitials(group.name)}
+                            </div>
+                          )}
+                        </div>
+                      </td>
                         <td>{group.name}-{group.type}</td>
+                       
                         
                       </tr>
                     ))}

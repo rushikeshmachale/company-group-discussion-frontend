@@ -21,6 +21,9 @@ const DashBoard = () => {
   const [allGroups, setAllGroups] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const [userInitials, setUserInitials] = useState('');
+  const [groupInitials, setGroupInitials] = useState('');
+
 
   useEffect(() => {
     const getEmployee = async () => {
@@ -28,8 +31,23 @@ const DashBoard = () => {
       if (employeeData) {
         const parsedEmployee = await JSON.parse(employeeData);
         setEmployee(parsedEmployee);
+        const initials = calculateInitials(parsedEmployee.username);
+        setUserInitials(initials);
       }
     };
+
+    const calculateInitials = (name) => {
+      const nameParts = name.split(' ');
+      if (nameParts.length === 1) {
+        return nameParts[0].charAt(0).toUpperCase();
+      } else {
+        const firstNameInitial = nameParts[0].charAt(0).toUpperCase();
+        const lastNameInitial = nameParts[nameParts.length - 1].charAt(0).toUpperCase();
+        return `${firstNameInitial}${lastNameInitial}`;
+      }
+    };
+    
+    
 
     const fetchAllGroups = async () => {
       try {
@@ -40,6 +58,8 @@ const DashBoard = () => {
           setSelectedGroup(firstGroup);
           fetchMessages(firstGroup.id);
           setGroupName(firstGroup.name);
+          
+          
         }
       } catch (error) {
         console.error('Error fetching all groups:', error);
@@ -63,7 +83,16 @@ const DashBoard = () => {
     setSelectedGroup(group);
     fetchMessages(group.id);
     setGroupName(group.name);
+    setGroupInitials(calculateGroupInitials(group.name));
   };
+  const calculateGroupInitials = (groupName) => {
+    const initials = groupName
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase())
+      .join('');
+    return initials;
+  };
+  
 
   const handleInfoClick = async (group) => {
     setSelectedGroup(group);
@@ -121,6 +150,25 @@ const DashBoard = () => {
       group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       group.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  const getGroupProfilePicture = (initials) => {
+    // Using DiceBear Avatars
+    const avatarBaseUrl = 'https://avatars.dicebear.com/api/avataaars/';
+    
+    // You can customize the options based on your preference
+    const options = {
+      width: 50, // Adjust the width of the avatar
+      height: 50, // Adjust the height of the avatar
+      background: 'transparent', // Background color
+      color: '#3498db', // Color of the avatar
+      fontSize: 25, // Font size of initials
+      fontWeight: 'bold', // Font weight of initials
+      format: 'svg', // Image format (svg, png, etc.)
+    };
+  
+    const avatarUrl = `${avatarBaseUrl}${initials}.svg?options=${JSON.stringify(options)}`;
+    return avatarUrl;
+  };
+  
 
   return (
     <div>
@@ -131,8 +179,22 @@ const DashBoard = () => {
             <div className="w-25">
               <span className=" fs-5">Hello  {employee.username}!</span>
             </div>
+            <div className="w-25">
+             {userInitials && (
+                         <div className="profile-initials">
+                          {userInitials}
+                          </div>
+                           )}
+            </div>
             <div className="w-75 text-left d-flex align-items-center justify-content-between">
               <span className="fw-bold fs-5">{groupName}</span>
+              <span className="w-75">
+                          {calculateGroupInitials(groupName) && (
+                            <div className="profile-initials">
+                              {calculateGroupInitials(groupName)}
+                            </div>
+                          )}
+                        </span>
               <div>
               <IconButton className="text-black" onClick={() => handleInfoClick(selectedGroup)}>
   <InfoIcon fontSize="large" />
@@ -169,9 +231,19 @@ const DashBoard = () => {
                         onClick={() => handleGroupClick(group)}
                         className={selectedGroup && selectedGroup.id === group.id ? 'table-success' : ''}
                       >
-                       
+                       <td>
+                            <div className="w-25">
+                              {calculateGroupInitials(group.name) && (
+                                <div className="profile-initials">
+                                  {calculateGroupInitials(group.name)}
+                                </div>
+                              )}
+                            </div>
+                          </td>
                         <td>{group.name}-{group.type}</td>
                         
+
+  
                       </tr>
                     ))}
                   </tbody>
@@ -187,7 +259,7 @@ const DashBoard = () => {
                   <div key={index} className={`message ${message.employee.id === employee.id ? 'sent' : 'received'}`}>
                     <div className={`message-content ${message.employee.id === employee.id ? 'sent-message' : 'received-message'} p-3 rounded mb-2`}>
                       <div className="message-info d-flex  mb-1">
-                        <span className="message-sender fw-bold me-2">{message.employee.id === employee.id ? 'You' : message.employee.username}</span>
+                        <span className="message-sender fw-bold me-2">   {message.employee.id === employee.id ? 'You' : message.employee.username}</span>
                         <span className="message-timestamp text-muted me-5 ms-4">{new Date(message.localDateTime).toLocaleString()}</span>
                          <DeleteIcon style={{ fontSize: '16px', color: 'red' } }onClick={()=>handleDeleteMessage(message.id)}></DeleteIcon>
                       </div>
