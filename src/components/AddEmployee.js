@@ -8,6 +8,8 @@ const AddEmployee = ({ newGroupId }) => {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [employee, setEmployee] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -77,12 +79,29 @@ const AddEmployee = ({ newGroupId }) => {
     }
   };
 
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredEmployees = employees.filter((employee) =>
+  employee.role === 'user' && employee.username.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
+
+
   return (
     <div className="container mt-4">
     <ToastContainer className="text-start mx-5"/>
     <h3 className="mb-4">Select Employees</h3>
     <div className="card">
       <div className="card-body" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+        <input
+          type="text"
+          placeholder="Search employees"
+          value={searchTerm}
+          onChange={handleSearch}
+          className="form-control mb-3"
+        />
         <form onSubmit={handleOnSubmit}>
           <div className="table-responsive">
             <table className="table">
@@ -93,36 +112,39 @@ const AddEmployee = ({ newGroupId }) => {
                 </tr>
               </thead>
               <tbody>
-                {employees.map((employee) => (
-                  employee.role === 'user' && (
-                    <tr key={employee.id}>
-                      <td>{employee.username}</td>
-                      <td>
-                        <div className="form-check text-end">
-                          <input
-                            type="checkbox"
-                            className="form-check-input border border-primary"
-                            id={`employee-${employee.id}`}
-                            value={employee.id}
-                            onChange={() => handleCheckboxChange(employee.id)}
-                            checked={selectedEmployees.includes(employee.id)}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  )
+                {/* Map through filteredEmployees here */}
+                {filteredEmployees.map((employee) => (
+                  <tr key={employee.id}>
+                    <td>{employee.username}</td>
+                    <td>
+                      <div className="form-check text-end">
+                        <input
+                          type="checkbox"
+                          className="form-check-input border border-primary"
+                          id={`employee-${employee.id}`}
+                          value={employee.id}
+                          onChange={() => handleCheckboxChange(employee.id)}
+                          checked={selectedEmployees.includes(employee.id)}
+                        />
+                      </div>
+                    </td>
+                  </tr>
                 ))}
               </tbody>
             </table>
           </div>
+          <div className="mt-3">
+          
+          </div>
+          
         </form>
+        
       </div>
+
     </div>
-    <div className="mt-3">
-      <button type="submit" className="btn btn-primary" onClick={handleOnSubmit}>
-        Add Selected Employees
-      </button>
-    </div>
+    <button type="submit" className="btn btn-primary" onClick={handleOnSubmit}>
+              Add Selected Employees
+            </button>
   </div>
 );
 };
