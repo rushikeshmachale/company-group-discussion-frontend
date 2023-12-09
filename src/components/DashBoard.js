@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import {  useNavigate } from "react-router-dom";
 import InfoIcon from '@mui/icons-material/Info';
@@ -9,7 +9,7 @@ import MessageService from "../services/MessageService";
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-
+import AttachFileIcon from '@mui/icons-material/AttachFile';
 
 
 const DashBoard = () => {
@@ -23,6 +23,53 @@ const DashBoard = () => {
   const navigate = useNavigate();
   const [userInitials, setUserInitials] = useState('');
   const [groupInitials, setGroupInitials] = useState('');
+
+  // ------------------------------------
+
+  // const [imageFile, setImageFile] = useState(null);
+  // const fileInputRef = useRef(null);
+
+
+
+  // const handleFileInputChange = (event) => {
+  //   const file = event.target.files[0];
+  //   // Set the selected file to state
+  //   setImageFile(file);
+  // };
+
+
+  // const handleAddAttachment = () => {
+  //   fileInputRef.current.click();
+  //   console.log("i am clicked");
+  // };
+
+  // const handleSend = async () => {
+  //   try {
+  //     const messageData = {
+  //       text: messageInput,
+  //       group: selectedGroup,
+  //       employee: employee,
+  //       localDateTime: new Date(),
+  //       imageFile: imageFile, // Initialize imageFile as null initially
+  //     };
+
+  //     console.log(imageFile);
+  
+      
+  
+  //     // await MessageService.sendMessageWithImage(messageData);
+  //     // setMessageInput('');
+  //     // setImageFile(null);
+  //     console.log(messageData);
+    
+  //   } catch (error) {
+  //     console.error('Error Sending Message with Image', error);
+  //   }
+  // };
+  
+ 
+
+  // ---------------
 
 
   useEffect(() => {
@@ -118,7 +165,8 @@ const DashBoard = () => {
         text: messageInput,
         group: selectedGroup,
         employee: employee,
-        localDateTime:new Date()
+        localDateTime:new Date(),
+       
       };
 
       const response = await MessageService.createMessage(messageData);
@@ -150,24 +198,8 @@ const DashBoard = () => {
       group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       group.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  const getGroupProfilePicture = (initials) => {
-    // Using DiceBear Avatars
-    const avatarBaseUrl = 'https://avatars.dicebear.com/api/avataaars/';
-    
-    // You can customize the options based on your preference
-    const options = {
-      width: 50, // Adjust the width of the avatar
-      height: 50, // Adjust the height of the avatar
-      background: 'transparent', // Background color
-      color: '#3498db', // Color of the avatar
-      fontSize: 25, // Font size of initials
-      fontWeight: 'bold', // Font weight of initials
-      format: 'svg', // Image format (svg, png, etc.)
-    };
+
   
-    const avatarUrl = `${avatarBaseUrl}${initials}.svg?options=${JSON.stringify(options)}`;
-    return avatarUrl;
-  };
   
 
   return (
@@ -180,21 +212,21 @@ const DashBoard = () => {
               <span className=" fs-5">Hello  {employee.username}!</span>
             </div>
             <div className="w-25">
-             {userInitials && (
+             {/* {userInitials && (
                          <div className="profile-initials">
                           {userInitials}
                           </div>
-                           )}
+                           )} */}
             </div>
             <div className="w-75 text-left d-flex align-items-center justify-content-between">
               <span className="fw-bold fs-5">{groupName}</span>
-              <span className="w-75">
+              {/* <span className="w-75">
                           {calculateGroupInitials(groupName) && (
                             <div className="profile-initials">
                               {calculateGroupInitials(groupName)}
                             </div>
                           )}
-                        </span>
+                        </span> */}
               <div>
               <IconButton className="text-black" onClick={() => handleInfoClick(selectedGroup)}>
   <InfoIcon fontSize="large" />
@@ -273,20 +305,35 @@ const DashBoard = () => {
                 <div className="alert alert-info">No messages available</div>
               )}
             </div>
+
+
+
             <div className="d-flex">
-              <input
-                type="text"
-                className="form-control m-1"
-                placeholder="Type a message..."
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-              />
-              <SendIcon
+        <input
+          type="text"
+          className="form-control m-1"
+          placeholder="Type a message..."
+          value={messageInput}
+          onChange={(e) => setMessageInput(e.target.value)}
+        />
+       
+        {/* <IconButton className="bg-primary" onClick={handleAddAttachment}>
+          <AttachFileIcon />
+        </IconButton> */}
+        {/* Hidden file input */}
+        {/* <input
+          ref={fileInputRef}
+          type="file"
+          style={{ display: "none" }}
+          onChange={handleFileInputChange}
+        /> */}
+
+       <SendIcon
           className="icon-button"
           fontSize="large"
           onClick={handleSend}
         />
-            </div>
+      </div>
           </div>
         </div>
       </div>
