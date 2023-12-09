@@ -3,7 +3,7 @@ import EmployeeService from '../services/LoginService';
 import GroupEmployeeService from '../services/GroupEmployeeService';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-
+import {ToastContainer,toast} from "react-toastify"
 const AddEmployee = ({ newGroupId }) => {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
@@ -61,17 +61,25 @@ const AddEmployee = ({ newGroupId }) => {
       const response = await GroupEmployeeService.addemployeesToGroup(request).then(()=>{
 
         // console.log('Response:', response);
-        alert('Employees added successfully!');
+
+        toast.success('Employees added successfully! ' , {
+          position: toast.POSITION.TOP_CENTER
+        });
         
         navigate(employee.role === 'admin' ? '/admin/dashboard' : '/user/dashboard');
-      }).catch((e)=>console.log(e))
+      }).catch((e)=>toast.error(e))
     } catch (error) {
-      console.error('Error adding employees to group:', error);
+
+      toast.error('Error adding employees to group:', error, {
+        position: toast.POSITION.TOP_CENTER
+      });
+      // console.error('Error adding employees to group:', error);
     }
   };
 
   return (
     <div className="container mt-4">
+    <ToastContainer className="text-start mx-5"/>
     <h3 className="mb-4">Select Employees</h3>
     <div className="card">
       <div className="card-body" style={{ maxHeight: '300px', overflowY: 'auto' }}>

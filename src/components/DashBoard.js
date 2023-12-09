@@ -9,6 +9,8 @@ import MessageService from "../services/MessageService";
 import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
+import { ToastContainer, toast } from "react-toastify";
+
 const DashBoard = () => {
   const [employee, setEmployee] = useState("");
   const [messages, setMessages] = useState([]);
@@ -78,6 +80,7 @@ const DashBoard = () => {
 
   const handleLogout = () => {
     navigate("/");
+    
   };
 
   const handleSend = async () => {
@@ -103,9 +106,17 @@ const DashBoard = () => {
       if (response) {
         const updatedMessages = messages.filter((message) => message.id !== id);
         setMessages(updatedMessages);
+        
       }
+      toast.success('Message deleted ' , {
+        position: toast.POSITION.TOP_CENTER
+      });
+      
     } catch (error) {
-      console.error("Error while deleting message", error);
+      toast.error('Error while deleting message ' , {
+        position: toast.POSITION.TOP_CENTER
+      });
+      // console.error("Error while deleting message", error);
     }
   };
 
@@ -122,6 +133,7 @@ const DashBoard = () => {
   return (
     <div>
       <div className="container-fluid h-100">
+      <ToastContainer className="text-start mx-5"/>
         <div className="row h-100">
           <div
             className="col-12 top-div d-flex align-items-center justify-content-between px-3 bg-gray bg-darken-xs

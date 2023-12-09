@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import MyGroupService from "../services/MyGroupService";
 import AddEmployee from "./AddEmployee";
+import { ToastContainer, toast } from "react-toastify";
 
 const CreateGroup = () => {
   const [newGroup, setNewGroup] = useState(null);
@@ -19,14 +20,21 @@ const CreateGroup = () => {
     try {
       const response = await MyGroupService.createGroup(group);
       setNewGroup(response);
+      toast.success('Group created successfully! ' , {
+        position: toast.POSITION.TOP_CENTER
+      });
       console.log("New Group:", response); // Print newGroup in console
     } catch (error) {
-      console.error("Error creating group:", error);
+      toast.success('Error creating group! ' , {
+        position: toast.POSITION.TOP_CENTER
+      });
+      // console.error("Error creating group:", error);
     }
   };
 
   return (
     <div className="container">
+    <ToastContainer className="text-start mx-5"/>
       <form onSubmit={handleSubmit} className="form-control my-5">
         <h5 className="text-center">Create Group</h5>
         <div className="container my-5">
