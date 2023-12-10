@@ -10,6 +10,16 @@ import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+import ImageService from "../services/ImageService";
+import {  ToastContainer,toast } from "react-toastify";
+
+
+
+
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import DescriptionIcon from '@mui/icons-material/Description';
+import ImageIcon from '@mui/icons-material/Image';
 
 
 const DashBoard = () => {
@@ -26,50 +36,81 @@ const DashBoard = () => {
 
   // ------------------------------------
 
-  // const [imageFile, setImageFile] = useState(null);
-  // const fileInputRef = useRef(null);
-
-
-
-  // const handleFileInputChange = (event) => {
-  //   const file = event.target.files[0];
-  //   // Set the selected file to state
-  //   setImageFile(file);
-  // };
-
-
-  // const handleAddAttachment = () => {
-  //   fileInputRef.current.click();
-  //   console.log("i am clicked");
-  // };
-
-  // const handleSend = async () => {
-  //   try {
-  //     const messageData = {
-  //       text: messageInput,
-  //       group: selectedGroup,
-  //       employee: employee,
-  //       localDateTime: new Date(),
-  //       imageFile: imageFile, // Initialize imageFile as null initially
-  //     };
-
-  //     console.log(imageFile);
-  
-      
-  
-  //     // await MessageService.sendMessageWithImage(messageData);
-  //     // setMessageInput('');
-  //     // setImageFile(null);
-  //     console.log(messageData);
-    
-  //   } catch (error) {
-  //     console.error('Error Sending Message with Image', error);
-  //   }
-  // };
-  
+  const [imageFile, setImageFile] = useState(null);
+  const fileInputRef = useRef(null);
  
 
-  // ---------------
+
+
+  const handleFileInputChange = (event) => {
+    const file = event.target.files[0];
+    const fileSizeInKB = file.size / 1024; // Calculate file size in KB
+
+  if (fileSizeInKB > 500) {
+    toast.error('Size limit is 500kb ! ' , {
+      position: toast.POSITION.TOP_CENTER
+    });
+    } else {
+    setImageFile(file);
+  }
+  };
+
+
+  const handleAddAttachment = () => {
+    fileInputRef.current.click();
+    
+  };
+
+
+  const handleSend = async () => {
+    try {
+
+      let imgUrl= null;
+
+      if(imageFile){
+
+        const fileList = await ImageService.getListFiles();
+        const uploadedFileName = imageFile.name;
+  
+        const fileNames = fileList.map(file => file.name);
+        let count = 1;
+        let tempFileName = uploadedFileName;
+  
+        while (fileNames.includes(tempFileName)) {
+          const fileNameParts = uploadedFileName.split('.');
+          const extension = fileNameParts.pop();
+          tempFileName = `${fileNameParts.join('.')}(${count}).${extension}`;
+          count++;
+        }
+  
+        const modifiedFile = new File([imageFile], tempFileName, { type: imageFile.type });
+  
+        const response1 = await ImageService.uploadFile(modifiedFile);
+        imgUrl = response1.message;
+
+     
+
+      }
+      
+      const messageData = {
+        text: messageInput,
+        group: selectedGroup,
+        employee: employee,
+        localDateTime:new Date(),
+        url: imgUrl,
+       
+      };
+
+      const response = await MessageService.createMessage(messageData);
+      setMessages([...messages,response]);
+      setMessageInput('');
+      setImageFile(null);
+    } catch (error) {
+      console.error("Error Sending Message");
+    }
+  };
+
+
 
 
   useEffect(() => {
@@ -112,6 +153,10 @@ const DashBoard = () => {
         console.error('Error fetching all groups:', error);
       }
     };
+
+    
+
+
 
     getEmployee();
     fetchAllGroups();
@@ -159,24 +204,6 @@ const DashBoard = () => {
     navigate('/');
   };
 
-  const handleSend = async () => {
-    try {
-      const messageData = {
-        text: messageInput,
-        group: selectedGroup,
-        employee: employee,
-        localDateTime:new Date(),
-       
-      };
-
-      const response = await MessageService.createMessage(messageData);
-      setMessages([...messages,response]);
-      setMessageInput('');
-    } catch (error) {
-      console.error("Error Sending Message");
-    }
-  };
-
   const handleDeleteMessage = async (id) => {
     try {
       const response = await MessageService.deleteMessage(id);
@@ -199,34 +226,42 @@ const DashBoard = () => {
       group.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  
-  
+
+
+const isImageFile = (url) => {
+  return /\.(jpeg|jpg|gif|png)$/i.test(url);
+};
+
+const getFileIcon = (url) => {
+  if (/\.(pdf)$/i.test(url)) {
+    return <PictureAsPdfIcon fontSize="large" />;
+  } else if (/\.(doc|docx|txt)$/i.test(url)) {
+    return <DescriptionIcon fontSize="large" />;
+  } else if (/\.(xls|xlsx)$/i.test(url)) {
+    return <InsertDriveFileIcon  fontSize="large"/>;
+  } else if (/\.(jpeg|jpg|gif|png)$/i.test(url)) {
+    return <ImageIcon fontSize="large" />;
+  } else {
+    return <InsertDriveFileIcon fontSize="large" />;
+  }
+};
+ 
 
   return (
     <div>
       <div className="container-fluid h-100">
+      <ToastContainer className="text-start mx-5"/>
         <div className="row h-100">
           <div className="col-12 top-div d-flex align-items-center justify-content-between px-3 bg-gray bg-darken-xs
 ">
             <div className="w-25">
               <span className=" fs-5">Hello  {employee.username}!</span>
             </div>
-            <div className="w-25">
-             {/* {userInitials && (
-                         <div className="profile-initials">
-                          {userInitials}
-                          </div>
-                           )} */}
-            </div>
+           
             <div className="w-75 text-left d-flex align-items-center justify-content-between">
+            
               <span className="fw-bold fs-5">{groupName}</span>
-              {/* <span className="w-75">
-                          {calculateGroupInitials(groupName) && (
-                            <div className="profile-initials">
-                              {calculateGroupInitials(groupName)}
-                            </div>
-                          )}
-                        </span> */}
+             
               <div>
               <IconButton className="text-black" onClick={() => handleInfoClick(selectedGroup)}>
   <InfoIcon fontSize="large" />
@@ -285,26 +320,45 @@ const DashBoard = () => {
             </div>
           </div>
           <div className="col-md-9 chat-window bg-cyan bg-lighten-xl">
-            <div className="chat-messages">
-              {messages ? (
-                messages.map((message, index) => (
-                  <div key={index} className={`message ${message.employee.id === employee.id ? 'sent' : 'received'}`}>
-                    <div className={`message-content ${message.employee.id === employee.id ? 'sent-message' : 'received-message'} p-3 rounded mb-2`}>
-                      <div className="message-info d-flex  mb-1">
-                        <span className="message-sender fw-bold me-2">   {message.employee.id === employee.id ? 'You' : message.employee.username}</span>
-                        <span className="message-timestamp text-muted me-5 ms-4">{new Date(message.localDateTime).toLocaleString()}</span>
-                         <DeleteIcon style={{ fontSize: '16px', color: 'red' } }onClick={()=>handleDeleteMessage(message.id)}></DeleteIcon>
-                      </div>
-                      <div className="message-text">
-                        {message.text}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="alert alert-info">No messages available</div>
-              )}
+         
+         
+          <div className="chat-messages">
+  {messages ? (
+    messages.map((message, index) => (
+      <div key={index} className={`message ${message.employee.id === employee.id ? 'sent' : 'received'}`}>
+        <div className={`message-content ${message.employee.id === employee.id ? 'sent-message' : 'received-message'} p-3 rounded mb-2`}>
+          <div className="message-info d-flex align-items-center justify-content-between mb-1">
+            <div className="d-flex align-items-center">
+              <span className="message-sender fw-bold me-2">{message.employee.id === employee.id ? 'You' : message.employee.username}</span>
+              <span className="message-timestamp text-muted">{new Date(message.localDateTime).toLocaleString()}</span>
             </div>
+            <DeleteIcon style={{ fontSize: '16px', color: 'red' }} onClick={() => handleDeleteMessage(message.id)} />
+          </div>
+          <div className="message-text">
+            {message.text}
+          </div>
+          {message.url && (
+  <div className="message-attachment mt-2">
+    {isImageFile(message.url) ? (
+      <img
+        src={`http://localhost:8888/file/files/${message.url}`}
+        alt="Attached file"
+        style={{ maxWidth: '100%', maxHeight: '200px' }}
+      />
+    ) : (
+      <div className="file-icon">
+        {getFileIcon(message.url)}
+      </div>
+    )}
+  </div>
+)}
+        </div>
+      </div>
+    ))
+  ) : (
+    <div className="alert alert-info">No messages available</div>
+  )}
+</div>
 
 
 
@@ -317,16 +371,16 @@ const DashBoard = () => {
           onChange={(e) => setMessageInput(e.target.value)}
         />
        
-        {/* <IconButton className="bg-primary" onClick={handleAddAttachment}>
+        <IconButton className="bg-primary" onClick={handleAddAttachment}>
           <AttachFileIcon />
-        </IconButton> */}
+        </IconButton>
         {/* Hidden file input */}
-        {/* <input
+        <input
           ref={fileInputRef}
           type="file"
           style={{ display: "none" }}
           onChange={handleFileInputChange}
-        /> */}
+        />
 
        <SendIcon
           className="icon-button"
