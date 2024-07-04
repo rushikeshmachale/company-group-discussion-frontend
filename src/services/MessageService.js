@@ -37,6 +37,39 @@ const MessageService = {
         const response = await axios.delete(`${API_BASE_URL}/message/${id}`);
         return response.data;
       },
+
+
+      // for image 
+
+      sendMessageWithImage: async (messageData,imgeData) => {
+        try {
+          const formData = new FormData();
+          formData.append('file', messageData.file); // Append the file to the form data
+          formData.append('message', JSON.stringify({ // Append other message fields as JSON
+            employee: messageData.employee,
+            group: messageData.group,
+            text: messageData.text,
+            localDateTime: messageData.localDateTime
+          }));
+      
+          const response = await axios.post(`${API_BASE_URL}/msgwimg`, formData ,{
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+
+            
+
+          });
+
+          return response.data;
+
+          } 
+          catch (error) {
+          console.error('Error sending message with image:', error);
+          throw error; // Re-throw the error to handle in the component
+        }
+      },
+
     };
     
 

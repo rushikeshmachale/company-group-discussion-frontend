@@ -132,7 +132,7 @@ const AddEmployee = ({ newGroupId }) => {
       </div>
 
     </div>
-    <button type="submit" className="btn btn-primary" onClick={handleOnSubmit}>
+            <button type="submit" className="btn btn-primary" onClick={handleOnSubmit}>
               Add Selected Employees
             </button>
   </div>

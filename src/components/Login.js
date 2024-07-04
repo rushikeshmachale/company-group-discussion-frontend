@@ -3,6 +3,7 @@ import EmployeeService from '../services/LoginService';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
+import {ToastContainer,toast} from "react-toastify"
 
 
 
@@ -32,12 +33,16 @@ const Login = () => {
             if (employee) {
               setEmployee(employee);
               setRole(employee.role)
-              setError('');
               handleNavigate(employee.role); 
               Cookies.set('employee',JSON.stringify(employee));
+              toast.success('Welcome ',username , {
+                position: toast.POSITION.TOP_CENTER
+              });
 
             } else {
-              setError('invalid credentials!!');
+              toast.error("invalid credentials!!", {
+                position: toast.POSITION.TOP_CENTER
+              });
               setRole(null);
             }
             
@@ -65,9 +70,12 @@ const Login = () => {
 
 
 <div className="container">
+
+<ToastContainer/>
       <div className="row justify-content-center mt-5">
         <div className="col-md-6">
           <div className="my-5">
+
             <h2>Login</h2>
             {error && <div className="alert alert-danger">{error}</div>}
             <form onSubmit={handleLogin}>
